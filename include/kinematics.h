@@ -101,3 +101,5 @@ inline std::string str(const Vector3& v) {
      << " [" << v.v[2] << "]";
   return ss.str();
 }
+
+Matrix44 xyzpToMatrix44(double x, double y, double z, double pitch);

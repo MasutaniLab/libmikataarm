@@ -33,17 +33,17 @@ namespace ssr {
     class MikataException : public std::exception {
     public:
       MikataException() {
-	msg = "MikataException";
+        msg = "MikataException";
       }
 
       MikataException(const char* str) {
-	msg = "MikataException:";
-	msg += str;
+        msg = "MikataException:";
+        msg += str;
       }
       virtual ~MikataException() throw() {}
 
       const char* what() const throw() {
-	return msg.c_str();
+        return msg.c_str();
       }
 
       std::string msg;
@@ -55,8 +55,8 @@ namespace ssr {
     class RangeException : public MikataException {
     public:
       RangeException(const char* str) : MikataException() {
-	msg = "RagneException:";
-	msg += str;
+        msg = "RagneException:";
+        msg += str;
       }
       virtual ~RangeException() throw() {}
     };
@@ -65,8 +65,8 @@ namespace ssr {
     class TimeoutException : public MikataException {
     public:
       TimeoutException(const char* str) : MikataException() {
-	msg = "TimeoutException:";
-	msg += str;
+        msg = "TimeoutException:";
+        msg += str;
       }
       virtual ~TimeoutException() throw() {}
     };
@@ -76,18 +76,18 @@ namespace ssr {
       double angle;
       double velocity;
     public:
-    JointCommand() : angle(0), velocity(0) {}
+      JointCommand() : angle(0), velocity(0) {}
       void copyFrom(const JointCommand& cmd) {
-	angle = cmd.angle;
-	velocity = cmd.velocity;
+        angle = cmd.angle;
+        velocity = cmd.velocity;
       }
 
       JointCommand(const JointCommand& cmd) {
-	copyFrom(cmd);
+        copyFrom(cmd);
       }
 
       void operator=(const JointCommand& cmd) {
-	copyFrom(cmd);
+        copyFrom(cmd);
       }
 
       ~JointCommand() {}
@@ -97,49 +97,49 @@ namespace ssr {
     public:
       double angle;
     public:
-    JointInfo() : angle(0) {}
-    JointInfo(double a): angle(a) {}
+      JointInfo() : angle(0) {}
+      JointInfo(double a) : angle(a) {}
       ~JointInfo() {}
 
     public:
       JointInfo(const JointInfo& i) {
-	copyFrom(i);
+        copyFrom(i);
       }
 
       void copyFrom(const JointInfo& i) {
-	angle = i.angle;
+        angle = i.angle;
       }
 
       void operator=(const JointInfo& i) {
-	copyFrom(i);
+        copyFrom(i);
       }
 
     };
 
-	
+
 
     struct LimitValue {
       double upper;
       double lower;
       LimitValue() : upper(0), lower(0) {}
-      LimitValue(double u, double l): upper(u), lower(l) {}
+      LimitValue(double u, double l) : upper(u), lower(l) {}
       ~LimitValue() {}
       LimitValue(const LimitValue& lv) {
-	copyFrom(lv);
+        copyFrom(lv);
       }
-	
+
       void copyFrom(const LimitValue& lv) {
-	upper = lv.upper;
-	lower = lv.lower;
+        upper = lv.upper;
+        lower = lv.lower;
       }
 
       void operator=(const LimitValue& lv) {
-	copyFrom(lv);
+        copyFrom(lv);
       }
 
     };
 
-    static const uint32_t numJoints = 6;
+    static const uint32_t numJoints = 4;
 
     /**
      *
@@ -151,14 +151,14 @@ namespace ssr {
 
       double m_JointOffset[numJoints];
       double m_GripperOffset;
-      ssr::dynamixel::DynamixelV2 m_Dynamixel;      
+      ssr::dynamixel::DynamixelV2 m_Dynamixel;
 
 
       LimitValue m_JointLimits[numJoints];
       LimitValue m_GripperLimit;
-    public: 
+    public:
       MikataArm(const char* filename, const uint32_t baudrate);
-      virtual ~MikataArm() ;
+      virtual ~MikataArm();
 
     public:
       /**
@@ -196,7 +196,7 @@ namespace ssr {
       std::vector<LimitValue> getJointLimits() const;
 
       void setJointLimits(std::vector<LimitValue>& lvs);
-      
+
       LimitValue getGripperLimit() const;
 
       void setGripperLimit(const LimitValue& lv);
@@ -208,7 +208,7 @@ namespace ssr {
       void moveGripper(const JointCommand& cmd);
 
       void waitAttained(const long timeoutMS);
-      
+
       void waitGripperAttained(const long timeoutMS);
 
       void openGripper();
@@ -217,7 +217,7 @@ namespace ssr {
 
       void setVelocityRatio(const double ratio);
 
-	  void setAccelerationRatio(const double ratio);
+      void setAccelerationRatio(const double ratio);
     };
   };
 };

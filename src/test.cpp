@@ -11,21 +11,22 @@ int main(const int argc, const char* argv[]) {
     std::cout << "USAGE: $./test filename baudrate" << std::endl;
     return -1;
   }
-  
+
   try {
     MikataArm m(argv[1], atoi(argv[2]));
     m.servoOn(false);
     // m.goHome();
-    
-    for(int j = 0;j < 1000;j++) {
+
+    for (int j = 0; j < 1000; j++) {
       std::vector<JointInfo> js = m.jointInfos();
-      for(int i = 0;i < numJoints;i++) {
-	std::cout << "j[" << i << "]" << js[i].angle << std::endl;
+      for (int i = 0; i < numJoints; i++) {
+        std::cout << "j[" << i << "]" << js[i].angle << std::endl;
       }
       ssr::Thread::Sleep(100);
     }
-    
-  } catch (std::exception& ex) {
+
+  }
+  catch (std::exception& ex) {
     std::cout << "Exception: " << ex.what() << std::endl;
     return -1;
   }

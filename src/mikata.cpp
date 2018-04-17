@@ -1,7 +1,7 @@
 #include <iostream>
 #include "mikata.h"
 
-//#define DEBUG
+#define DEBUG
 
 /**
  * この値は，Offsetの値が適用された後の制限値です．
@@ -9,15 +9,13 @@
  * アームはまっすぐ上に伸びている状態になるはずです．
  */
 static const double jointLimitValues[][2] = {
-  {-M_PI/2, M_PI/2},
-  {-M_PI/2, M_PI/2},
+  {-M_PI / 2, M_PI / 2},
+  {-M_PI / 2, M_PI / 2},
   {0, M_PI},
-  {-M_PI/2, M_PI/2},
-  {-M_PI/2, M_PI/2},
-  {-M_PI/2, M_PI/2}
+  {-M_PI / 2, M_PI / 2},
 };
 
-static const double gripperLimitValue[2] = {-1.0, 0.1};
+static const double gripperLimitValue[2] = { -1.0, 0.1 };
 
 using namespace ssr::mikata;
 using namespace ssr::dynamixel;
@@ -27,26 +25,22 @@ MikataArm::MikataArm(const char* filename, const uint32_t baudrate) :m_Dynamixel
   m_IDs[1] = 2;
   m_IDs[2] = 3;
   m_IDs[3] = 4;
-  m_IDs[4] = 5;
-  m_IDs[5] = 6;
 
-  for(int i = 0;i < numJoints;i++) {
+  for (int i = 0; i < numJoints; i++) {
     m_JointLimits[i].lower = jointLimitValues[i][0];
     m_JointLimits[i].upper = jointLimitValues[i][1];
   }
 
-  m_GripperID = 7;
+  m_GripperID = 5;
 
   m_GripperLimit.lower = gripperLimitValue[0];
   m_GripperLimit.upper = gripperLimitValue[1];
 
   m_JointOffset[0] = M_PI;
-  m_JointOffset[1] = M_PI - M_PI/2 + 1.42923183;
-  m_JointOffset[2] = M_PI - 1.42923183;
+  m_JointOffset[1] = M_PI - M_PI / 2 + 1.41003358616906190858; //atan2(148,24) = 1.41003358616906190858
+  m_JointOffset[2] = M_PI - 1.41003358616906190858;
   m_JointOffset[3] = M_PI;
-  m_JointOffset[4] = M_PI;
-  m_JointOffset[5] = M_PI;
-  
+
   m_GripperOffset = M_PI;
 }
 
@@ -57,31 +51,31 @@ MikataArm::~MikataArm() {
 
 std::vector<JointInfo> MikataArm::jointInfos() {
   std::vector<JointInfo> joints;
-  for(int i = 0;i < 6;i++) {
+  for (int i = 0; i < numJoints; i++) {
     int32_t position = m_Dynamixel.GetCurrentPosition(m_IDs[i]);
 #ifdef DEBUG
     std::cout << "mikata:" << i << ": " << position << std::endl;
     std::cout << "[";
-    for(int j = 0;j < 4;j++) {
-      std::cout << (int)(uint8_t)((position >> (8*j)) & 0x00FF) << " ";
+    for (int j = 0; j < 4; j++) {
+      std::cout << (int)(uint8_t)((position >> (8 * j)) & 0x00FF) << " ";
     }
     std::cout << "]" << std::endl;
 #endif
     double angle = pos_to_rad(position) - m_JointOffset[i];
     joints.push_back(JointInfo(angle));
 
-  }
+    }
 
   return joints;
-}
+  }
 
 JointInfo MikataArm::gripper() {
   int32_t position = m_Dynamixel.GetCurrentPosition(m_GripperID);
 #ifdef DEBUG
   std::cout << "mikata_gripper: " << position << std::endl;
   std::cout << "[";
-  for(int j = 0;j < 4;j++) {
-    std::cout << (int)(uint8_t)((position >> (8*j)) & 0x00FF) << " ";
+  for (int j = 0; j < 4; j++) {
+    std::cout << (int)(uint8_t)((position >> (8 * j)) & 0x00FF) << " ";
   }
   std::cout << "]" << std::endl;
 #endif
@@ -89,11 +83,11 @@ JointInfo MikataArm::gripper() {
   JointInfo info;
   info.angle = angle;
   return info;
-}
+  }
 
 
 void MikataArm::servoOn(const bool flag) {
-  for(int i = 0;i < numJoints;i++) {
+  for (int i = 0; i < numJoints; i++) {
     if (flag) {
       m_Dynamixel.TorqueEnable(m_IDs[i]);
     } else {
@@ -111,7 +105,7 @@ void MikataArm::gripperServoOn(const bool flag) {
 }
 
 void MikataArm::goHome() {
-  for(int i = 0;i < numJoints;i++) {
+  for (int i = 0; i < numJoints; i++) {
     int32_t pos = rad_to_pos(0.0 + m_JointOffset[i]);
     m_Dynamixel.MovePosition(m_IDs[i], pos);
   }
@@ -119,7 +113,7 @@ void MikataArm::goHome() {
 
 std::vector<LimitValue> MikataArm::getJointLimits() const {
   std::vector<LimitValue> lvs;
-  for(int i = 0;i < numJoints;i++) {
+  for (int i = 0; i < numJoints; i++) {
     lvs.push_back(m_JointLimits[i]);
   }
   return lvs;
@@ -129,8 +123,8 @@ void MikataArm::setJointLimits(std::vector<LimitValue>& lvs) {
   if (lvs.size() != numJoints) {
     throw MikataException("setJointLimits Error. Invalid size of passed argument lvs::std::vector<LimitValue>");
   }
-  
-  for(int i = 0;i < numJoints;i++) {
+
+  for (int i = 0; i < numJoints; i++) {
     m_JointLimits[i] = lvs[i];
   }
 }
@@ -145,7 +139,7 @@ void MikataArm::setGripperLimit(const LimitValue& lv) {
 
 
 void MikataArm::move(const std::vector<JointCommand>& cmds) {
-  for(int i = 0;i < numJoints;i++) {
+  for (int i = 0; i < numJoints; i++) {
     double angle = cmds[i].angle;
     if (angle > m_JointLimits[i].upper) angle = m_JointLimits[i].upper;
     else if (angle < m_JointLimits[i].lower) angle = m_JointLimits[i].lower;
@@ -187,24 +181,24 @@ void MikataArm::moveGripper(const double ratio) {
 void MikataArm::waitAttained(const long timeoutMS) {
   ssr::Timer timer;
   timer.tick();
-  while(true) {
-    int wait_count = 0;  
-    for(int i = 0;i < 6;i++) {
+  while (true) {
+    int wait_count = 0;
+    for (int i = 0; i < numJoints; i++) {
       ssr::TimeSpec time;
       timer.tack(&time);
-      if (time.getUsec() > timeoutMS*1000) {
-	throw TimeoutException("in MikataArm::waitAttained()");
+      if (time.getUsec() > timeoutMS * 1000) {
+        throw TimeoutException("in MikataArm::waitAttained()");
       }
-	  /*
+      /*
       uint8_t status = m_Dynamixel.GetMovingStatus(m_IDs[i]);
       if (status & MOVINGSTATUS_INPOSITION) {
-	wait_count++;
+        wait_count++;
       }
-	  */
-	  uint8_t status = m_Dynamixel.GetMoving(m_IDs[i]);
-	  if (status == 0) {
-		  wait_count++;
-	  }
+      */
+      uint8_t status = m_Dynamixel.GetMoving(m_IDs[i]);
+      if (status == 0) {
+        wait_count++;
+      }
     }
 
     if (wait_count == 6) {
@@ -219,11 +213,11 @@ void MikataArm::waitGripperAttained(const long timeoutMS) {
   timer.tick();
   ssr::TimeSpec time;
   timer.tack(&time);
-  while(true) {
-    if (time.getUsec() > timeoutMS*1000) {
+  while (true) {
+    if (time.getUsec() > timeoutMS * 1000) {
       throw TimeoutException("in MikataArm::waitAttained()");
     }
-      
+
     uint8_t status = m_Dynamixel.GetMovingStatus(m_GripperID);
     if (status & MOVINGSTATUS_INPOSITION) {
       break;
@@ -233,7 +227,7 @@ void MikataArm::waitGripperAttained(const long timeoutMS) {
 
 void MikataArm::setVelocityRatio(const double ratio) {
   double r = ratio > 1.0 ? 1.0 : (ratio < 0.0 ? 0 : ratio);
-  for(int i = 0;i < 6;i++) {
+  for (int i = 0; i < 6; i++) {
     uint32_t v = m_Dynamixel.GetVelocityLimit(m_IDs[i]);
     m_Dynamixel.SetProfileVelocity(m_IDs[i], v * r);
   }
@@ -243,12 +237,12 @@ void MikataArm::setVelocityRatio(const double ratio) {
 
 
 void MikataArm::setAccelerationRatio(const double ratio) {
-	double r = ratio > 1.0 ? 1.0 : (ratio < 0.0 ? 0 : ratio);
-	for (int i = 0; i < 6; i++) {
-		uint32_t v = m_Dynamixel.GetAccelerationLimit(m_IDs[i]);
-		m_Dynamixel.SetProfileAcceleration(m_IDs[i], v * r);
-	}
-	uint32_t v = m_Dynamixel.GetAccelerationLimit(m_GripperID);
-	m_Dynamixel.SetProfileAcceleration(m_GripperID, v * r);
+  double r = ratio > 1.0 ? 1.0 : (ratio < 0.0 ? 0 : ratio);
+  for (int i = 0; i < 6; i++) {
+    uint32_t v = m_Dynamixel.GetAccelerationLimit(m_IDs[i]);
+    m_Dynamixel.SetProfileAcceleration(m_IDs[i], v * r);
+  }
+  uint32_t v = m_Dynamixel.GetAccelerationLimit(m_GripperID);
+  m_Dynamixel.SetProfileAcceleration(m_GripperID, v * r);
 }
 
