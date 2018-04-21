@@ -150,6 +150,7 @@ namespace ssr {
       uint8_t m_GripperID;
 
       double m_JointOffset[numJoints];
+      int m_JointSign[numJoints];
       double m_GripperOffset;
       ssr::dynamixel::DynamixelV2 m_Dynamixel;
 
