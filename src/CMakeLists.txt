@@ -1,6 +1,7 @@
 set(_srcs mikata.cpp kinematics.cpp )
 
 set(test_srcs test.cpp ${_srcs})
+set(test2_srcs test2.cpp ${_srcs})
 set(kinetest_srcs kinematics_test.cpp ${_srcs})
 set(kinetest2_srcs kinematics_test2.cpp ${_srcs})
 set(kinetest3_srcs kinematics_test3.cpp ${_srcs})
@@ -23,6 +24,9 @@ target_link_libraries(${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} ${ADDITIONAL_LIB
 
 add_executable(${PROJECT_NAME}_test ${test_srcs})
 target_link_libraries(${PROJECT_NAME}_test ${CMAKE_THREAD_LIBS_INIT} ${ADDITIONAL_LIBRARY})
+
+add_executable(${PROJECT_NAME}_test2 ${test2_srcs})
+target_link_libraries(${PROJECT_NAME}_test2 ${CMAKE_THREAD_LIBS_INIT} ${ADDITIONAL_LIBRARY})
 
 add_executable(kinematics_test ${kinetest_srcs})
 target_link_libraries(kinematics_test ${CMAKE_THREAD_LIBS_INIT} ${ADDITIONAL_LIBRARY})
