@@ -41,7 +41,7 @@ namespace ssr {
         msg += str;
       }
       virtual ~MikataException() throw() {}
-
+      
       const char* what() const throw() {
         return msg.c_str();
       }
@@ -150,6 +150,7 @@ namespace ssr {
       uint8_t m_GripperID;
 
       double m_JointOffset[numJoints];
+      int m_JointSign[numJoints];
       double m_GripperOffset;
       ssr::dynamixel::DynamixelV2 m_Dynamixel;
 

@@ -1,6 +1,7 @@
 #include <math.h>
 #include <iostream>
 #include <iomanip>
+#include <exception>
 #include "kinematics.h"
 using namespace std;
 
@@ -23,11 +24,17 @@ int main(void) {
     pitch = d*M_PI / 180;
     Matrix44 m = xyzpToMatrix44(x, y, z, pitch);
     cout << str(m) << endl;
-    vector<double> solved = inverse_kinematics(m);
-    for (int i = 0; i < NumJoints; i++) {
-      cout << setw(10) << solved[i] * 180 / M_PI;
+    try {
+      vector<double> solved = inverse_kinematics(m);
+      for (int i = 0; i < NumJoints; i++) {
+        cout << setw(10) << solved[i] * 180 / M_PI;
+      }
+      cout << endl;
     }
-    cout << endl;
+    catch (exception &e) {
+      cout << e.what() << endl;
+    }
+    
     cout << "------------------------------------------------------------" << endl;
   }
   return 0;

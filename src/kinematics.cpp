@@ -2,7 +2,7 @@
 #include <vector>
 #include <iostream>
 
-const double L1 = 76.5; //アクチュエータ1の下端から第2軸まで．台座の下端からならば加算必要
+const double L1 = 78.5; //台座の下端から第2軸まで．実測．
 const double L2z = 148;
 const double L2x = 24;
 const double L2 = sqrt(L2z*L2z + L2x*L2x); //第2軸と第3軸の軸間距離
@@ -144,9 +144,7 @@ std::vector<double> inverse_kinematics(const Matrix44& mat) {
   double th1, th2, th3, th4;
   double cos3 = (d24*d24 - L2*L2 - L3*L3) / (2 * L2 * L3);
   if (abs(cos3) > 1) {
-    //解がない場合，例外を投げるべきでは？
-    th1 = th2 = th3 = th4 = 0;
-    std::cout << "解なし！" << std::endl;
+    throw KinematicsException("impossible to solve inverse kinematics.");
   } else {
     th3 = acos(cos3);
     double psi = acos((d24*d24 + L2*L2 - L3*L3) / (2 * L2 * d24));

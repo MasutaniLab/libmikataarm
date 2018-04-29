@@ -6,6 +6,26 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <exception>
+
+class KinematicsException : public std::exception {
+public:
+  KinematicsException() {
+    msg = "KinematicsException";
+  }
+
+  KinematicsException(const char* str) {
+    msg = "KinematicsException:";
+    msg += str;
+  }
+  virtual ~KinematicsException() throw() {}
+
+  const char* what() const throw() {
+    return msg.c_str();
+  }
+
+  std::string msg;
+};
 
 //typedef double Matrix44[4][4];
 struct Matrix44 {

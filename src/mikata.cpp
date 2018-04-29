@@ -37,11 +37,17 @@ MikataArm::MikataArm(const char* filename, const uint32_t baudrate) :m_Dynamixel
   m_GripperLimit.upper = gripperLimitValue[1];
 
   m_JointOffset[0] = M_PI;
-  m_JointOffset[1] = M_PI - M_PI / 2 + 1.41003358616906190858; //atan2(148,24) = 1.41003358616906190858
-  m_JointOffset[2] = M_PI - 1.41003358616906190858;
+  m_JointOffset[1] = M_PI + M_PI / 2 - 1.41003358616906190858; //atan2(148,24) = 1.41003358616906190858
+  m_JointOffset[2] = M_PI - M_PI/2 + 1.41003358616906190858;
   m_JointOffset[3] = M_PI;
 
   m_GripperOffset = M_PI;
+
+  m_JointSign[0] = 1;
+  m_JointSign[1] = -1;
+  m_JointSign[2] = -1;
+  m_JointSign[3] = -1;
+
 }
 
 
@@ -61,7 +67,7 @@ std::vector<JointInfo> MikataArm::jointInfos() {
     }
     std::cout << "]" << std::endl;
 #endif
-    double angle = pos_to_rad(position) - m_JointOffset[i];
+    double angle = m_JointSign[i] * (pos_to_rad(position) - m_JointOffset[i]);
     joints.push_back(JointInfo(angle));
 
     }
@@ -144,7 +150,7 @@ void MikataArm::move(const std::vector<JointCommand>& cmds) {
     if (angle > m_JointLimits[i].upper) angle = m_JointLimits[i].upper;
     else if (angle < m_JointLimits[i].lower) angle = m_JointLimits[i].lower;
 
-    m_Dynamixel.MovePosition(m_IDs[i], rad_to_pos(angle + m_JointOffset[i]));
+    m_Dynamixel.MovePosition(m_IDs[i], rad_to_pos(m_JointSign[i]*angle + m_JointOffset[i]));
   }
 }
 
@@ -227,7 +233,7 @@ void MikataArm::waitGripperAttained(const long timeoutMS) {
 
 void MikataArm::setVelocityRatio(const double ratio) {
   double r = ratio > 1.0 ? 1.0 : (ratio < 0.0 ? 0 : ratio);
-  for (int i = 0; i < 6; i++) {
+  for (int i = 0; i < numJoints; i++) {
     uint32_t v = m_Dynamixel.GetVelocityLimit(m_IDs[i]);
     m_Dynamixel.SetProfileVelocity(m_IDs[i], v * r);
   }
@@ -238,7 +244,7 @@ void MikataArm::setVelocityRatio(const double ratio) {
 
 void MikataArm::setAccelerationRatio(const double ratio) {
   double r = ratio > 1.0 ? 1.0 : (ratio < 0.0 ? 0 : ratio);
-  for (int i = 0; i < 6; i++) {
+  for (int i = 0; i < numJoints; i++) {
     uint32_t v = m_Dynamixel.GetAccelerationLimit(m_IDs[i]);
     m_Dynamixel.SetProfileAcceleration(m_IDs[i], v * r);
   }
